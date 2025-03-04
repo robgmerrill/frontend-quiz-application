@@ -1,12 +1,14 @@
-"use client";
+// NO 'use client' here -> It's a Server Component
 
-import { useSearchParams } from "next/navigation";
-import Link from "next/link";
+interface ResultsPageProps {
+  searchParams: {
+    score?: string;
+    total?: string;
+  };
+}
 
-export default function ResultsPage() {
-  const searchParams = useSearchParams();
-  const score = searchParams.get("score");
-  const total = searchParams.get("total");
+export default function ResultsPage({ searchParams }: ResultsPageProps) {
+  const { score, total } = searchParams;
 
   return (
     <main className="min-h-screen flex flex-col items-center justify-center p-4">
@@ -15,11 +17,9 @@ export default function ResultsPage() {
         <p className="mb-6">
           You scored {score} out of {total}!
         </p>
-        <Link href="/">
-          <button className="px-4 py-2 bg-blue-500 text-white rounded">
-            Play Again
-          </button>
-        </Link>
+        <a href="/" className="px-4 py-2 bg-blue-500 text-white rounded">
+          Play Again
+        </a>
       </div>
     </main>
   );
