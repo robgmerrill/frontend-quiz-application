@@ -1,8 +1,8 @@
 // src/app/api/questions/route.ts
-
 import { NextResponse } from "next/server";
+import { Question } from "@/types/quiz";
 
-const questions = [
+const questions: Question[] = [
   {
     question: "What does HTML stand for?",
     answers: [
@@ -159,6 +159,6 @@ const questions = [
   },
 ];
 
-export async function GET(request: Request) {
+export async function GET() {
   return NextResponse.json(questions);
 }
