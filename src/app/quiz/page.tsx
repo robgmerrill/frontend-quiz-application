@@ -2,21 +2,23 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import type { Question } from "@/types/quiz"; // adjust path as needed
 
 export default function QuizPage() {
   const router = useRouter();
-  const [questions, setQuestions] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+
+  // Tell useState that 'questions' is an array of Question
+  const [questions, setQuestions] = useState<Question[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [score, setScore] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  // Fetch questions from the backend API on mount
   useEffect(() => {
     async function fetchQuestions() {
       try {
         const res = await fetch("/api/questions");
-        const data = await res.json();
+        const data: Question[] = await res.json();
         setQuestions(data);
       } catch (error) {
         console.error("Failed to fetch questions:", error);
@@ -27,11 +29,10 @@ export default function QuizPage() {
     fetchQuestions();
   }, []);
 
-  // Show a loading state while fetching questions
   if (loading) {
     return (
       <main className="min-h-screen flex items-center justify-center">
-        <p>Loading...</p>
+        Loading...
       </main>
     );
   }
@@ -39,7 +40,7 @@ export default function QuizPage() {
   const currentQuestion = questions[currentQuestionIndex];
   const progressPercentage = (currentQuestionIndex / questions.length) * 100;
 
-  const handleAnswerClick = (index: number) => {
+  function handleAnswerClick(index: number) {
     if (selectedAnswer !== null) return; // Prevent multiple selections
     setSelectedAnswer(index);
 
@@ -48,7 +49,6 @@ export default function QuizPage() {
       setScore((prev) => prev + 1);
     }
 
-    // Delay for feedback before moving on
     setTimeout(() => {
       if (currentQuestionIndex + 1 < questions.length) {
         setCurrentQuestionIndex((prev) => prev + 1);
@@ -61,10 +61,9 @@ export default function QuizPage() {
         );
       }
     }, 1000);
-  };
+  }
 
-  // Helper to return conditional button classes based on answer state
-  const getButtonClass = (index: number) => {
+  function getButtonClass(index: number) {
     if (selectedAnswer === null) {
       return "w-full border p-2 rounded text-left hover:bg-gray-100 transition-all duration-300";
     }
@@ -77,7 +76,7 @@ export default function QuizPage() {
       return "w-full border p-2 rounded text-left bg-green-100 transition-all duration-300";
     }
     return "w-full border p-2 rounded text-left opacity-50 transition-all duration-300";
-  };
+  }
 
   return (
     <main className="min-h-screen flex flex-col items-center justify-center p-4">
@@ -98,7 +97,7 @@ export default function QuizPage() {
         </h2>
         <p className="mb-6">{currentQuestion.question}</p>
         <ul className="mb-6">
-          {currentQuestion.answers.map((answer, index) => (
+          {currentQuestion.answers.map((answer: string, index: number) => (
             <li key={index} className="mb-2">
               <button
                 className={getButtonClass(index)}
